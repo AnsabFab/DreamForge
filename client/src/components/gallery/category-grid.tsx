@@ -185,17 +185,31 @@ export function CategoryGrid() {
   const [categoryImages, setCategoryImages] = useState<Image[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Effect to fetch sample images when category changes
+  // Fetch images from API when category changes
   useEffect(() => {
     if (selectedCategory) {
       setIsLoading(true);
       
-      // Simulate API call delay for realism
-      setTimeout(() => {
-        const category = categories.find(c => c.id === selectedCategory);
-        setCategoryImages(category?.images || []);
-        setIsLoading(false);
-      }, 800);
+      // Make an actual API call to get the images
+      fetch(`/api/images/public?filter=${selectedCategory}&limit=12`)
+        .then(response => response.json())
+        .then(data => {
+          if (data && Array.isArray(data)) {
+            setCategoryImages(data);
+          } else {
+            console.error("Invalid data format received from API");
+            setCategoryImages([]);
+          }
+          setIsLoading(false);
+        })
+        .catch(error => {
+          console.error("Error fetching images:", error);
+          setIsLoading(false);
+          
+          // Fallback to local data if API fails
+          const category = categories.find(c => c.id === selectedCategory);
+          setCategoryImages(category?.images || []);
+        });
     }
   }, [selectedCategory]);
   

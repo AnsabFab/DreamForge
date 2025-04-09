@@ -153,11 +153,9 @@ export function BuyCreditsModal({ open, onClose }: BuyCreditsModalProps) {
             }
           });
           
-          // For demo purposes, simulate a PayPal approval
-          // In a real app, this would be handled by PayPal's approval flow and redirects
-          setTimeout(() => {
-            window.postMessage('paypal_payment_approved', '*');
-          }, 3000);
+          // For a real production app, the PayPal window would handle
+          // the redirects and postMessage events automatically
+          // No simulation needed - user must complete the actual PayPal flow
         } else {
           throw new Error("No approval link found in the PayPal response");
         }

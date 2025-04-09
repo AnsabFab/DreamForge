@@ -5,7 +5,7 @@ import { ImageCard } from "./image-card";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-type FilterOption = "trending" | "newest" | "mostLiked" | "fantasy" | "portraits" | "anime";
+type FilterOption = "trending" | "newest" | "mostLiked" | "fantasy" | "portraits" | "anime" | "landscapes" | "abstract" | "cyberpunk" | "scifi" | "animals";
 
 export function PublicGallery() {
   const [activeFilter, setActiveFilter] = useState<FilterOption>("trending");
@@ -78,9 +78,29 @@ export function PublicGallery() {
             onClick={() => handleFilterChange("anime")} 
           />
           <FilterButton 
-            label="More" 
-            active={false} 
-            onClick={() => {}} 
+            label="Landscapes" 
+            active={activeFilter === "landscapes"} 
+            onClick={() => handleFilterChange("landscapes")} 
+          />
+          <FilterButton 
+            label="Abstract" 
+            active={activeFilter === "abstract"} 
+            onClick={() => handleFilterChange("abstract")} 
+          />
+          <FilterButton 
+            label="Cyberpunk" 
+            active={activeFilter === "cyberpunk"} 
+            onClick={() => handleFilterChange("cyberpunk")} 
+          />
+          <FilterButton 
+            label="Sci-Fi" 
+            active={activeFilter === "scifi"} 
+            onClick={() => handleFilterChange("scifi")} 
+          />
+          <FilterButton 
+            label="Animals" 
+            active={activeFilter === "animals"} 
+            onClick={() => handleFilterChange("animals")} 
           />
         </div>
       </div>

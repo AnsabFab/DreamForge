@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { generateImage } from "./huggingface";
 import { createPayPalOrder, capturePayPalOrder } from "./paypal";
-import { generateImageSchema, insertUserSchema, loginSchema } from "@shared/schema";
+import { generateImageSchema, insertUserSchema, loginSchema, CREDIT_PACKAGES } from "@shared/schema";
 import { z } from "zod";
 import { generateSampleImages } from "./sample-data";
 
@@ -103,10 +103,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const styles = await storage.getStyles();
       
       // Use the appropriate category based on the filter
-      let category: "fantasy" | "portraits" | "anime" | "landscapes" | "abstract" | "trending" | "newest" | "mostLiked" = "trending";
+      let category: "fantasy" | "portraits" | "anime" | "landscapes" | "abstract" | "cyberpunk" | "scifi" | "animals" | "trending" | "newest" | "mostLiked" = "trending";
       
       if (filter === "fantasy" || filter === "portraits" || filter === "anime" || 
-          filter === "newest" || filter === "mostLiked") {
+          filter === "landscapes" || filter === "abstract" || filter === "cyberpunk" ||
+          filter === "scifi" || filter === "animals" || filter === "newest" || 
+          filter === "mostLiked") {
         category = filter as any;
       }
       
@@ -152,23 +154,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Order ID and Package ID are required" });
       }
       
-      // In a real app, we would validate the order with PayPal first
+      // Validate and capture the order with PayPal
       const captureResponse = await capturePayPalOrder(orderId);
       
       if (captureResponse.status !== "COMPLETED") {
         return res.status(400).json({ message: "Payment not completed" });
       }
       
-      // Find the credit package
-      const creditPackage = z.number().parse(packageId);
+      // Find the credit package to get the number of credits
+      const creditPackageId = z.number().parse(packageId);
       const userId = req.user!.id;
+      
+      // Get credit package details from the schema
+      const creditPackage = CREDIT_PACKAGES.find(pkg => pkg.id === creditPackageId);
+      
+      if (!creditPackage) {
+        return res.status(400).json({ message: "Invalid package selected" });
+      }
+      
+      // Get current user to determine their current credits
+      const currentUser = await storage.getUser(userId);
+      
+      if (!currentUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Calculate the amount in cents and update user credits
+      const amountInCents = Math.round(creditPackage.price * 100);
+      const newCredits = currentUser.credits + creditPackage.credits;
       
       // Add credits to user account
       const purchase = await storage.createCreditPurchase(userId, {
-        amount: 0, // This would be the actual amount in cents
-        credits: 0, // This would be the actual credits
+        amount: amountInCents,
+        credits: creditPackage.credits,
         paypalOrderId: orderId,
       });
+      
+      // Update user's credits
+      const updatedUser = await storage.updateUserCredits(userId, newCredits);
+      
+      // If user credits update fails, log the error
+      if (!updatedUser) {
+        console.error(`Failed to update credits for user ${userId}`);
+        return res.status(500).json({ message: "Failed to update user credits" });
+      }
       
       // Get updated user
       const user = await storage.getUser(userId);
