@@ -46,7 +46,7 @@ export interface IStorage {
   getUserPurchases(userId: number): Promise<CreditPurchase[]>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 }
 
 // In-memory implementation
@@ -56,7 +56,7 @@ export class MemStorage implements IStorage {
   private modelsMap: Map<number, Model>;
   private stylesMap: Map<number, Style>;
   private purchasesMap: Map<number, CreditPurchase>;
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
   
   private userIdCounter: number;
   private imageIdCounter: number;
@@ -150,7 +150,7 @@ export class MemStorage implements IStorage {
       id,
       ...userData,
       credits: 5, // New users get 5 free credits
-      profileImage: undefined,
+      profileImage: null,
       createdAt: now
     };
     
@@ -270,4 +270,8 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Import our database implementation
+import { DatabaseStorage } from "./database-storage";
+
+// Use database storage instead of in-memory storage
+export const storage = new DatabaseStorage();
