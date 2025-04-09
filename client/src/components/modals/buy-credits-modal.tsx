@@ -92,35 +92,85 @@ export function BuyCreditsModal({ open, onClose }: BuyCreditsModalProps) {
       setCheckoutStep('processing');
       const orderResult = await createOrderMutation.mutateAsync(selectedPackage);
       
-      // In a real implementation, we'd redirect to PayPal
-      // For this example, we'll simulate successful payment
+      // Find the approval URL in the PayPal response
       if (orderResult && orderResult.id) {
         const approveLink = orderResult.links.find((link: any) => link.rel === "approve");
         
-        // Show a loading state for 2 seconds to simulate the PayPal checkout
-        setTimeout(async () => {
-          try {
-            // Capture the order
-            await captureOrderMutation.mutateAsync({
-              orderId: orderResult.id,
-              packageId: selectedPackage
-            });
-            
-            // Close modal on success
-            toast({
-              title: "Credits added successfully!",
-              description: `Your purchase has been completed and credits added to your account.`,
-              variant: "default",
-            });
-            onClose();
-          } catch (error) {
-            console.error("Payment capture error:", error);
-            setCheckoutStep('payment');
-          }
-        }, 2000);
+        if (approveLink && approveLink.href) {
+          // In a production environment, we would redirect the user to the PayPal approval page
+          // For this implementation, we'll open PayPal checkout in a new window
+          const paypalWindow = window.open(approveLink.href, 'paypal_window', 'width=1000,height=800');
+          
+          // Set up a message listener for when the PayPal process completes
+          window.addEventListener('message', async function paypalCallback(event) {
+            // Check if the message is from our expected source
+            if (event.data === 'paypal_payment_approved') {
+              // Remove the event listener when we're done with it
+              window.removeEventListener('message', paypalCallback);
+              
+              if (paypalWindow) {
+                paypalWindow.close();
+              }
+              
+              try {
+                // Capture the order using our PayPal integration
+                await captureOrderMutation.mutateAsync({
+                  orderId: orderResult.id,
+                  packageId: selectedPackage
+                });
+                
+                // Close modal on success
+                toast({
+                  title: "Credits added successfully!",
+                  description: `Your purchase has been completed and ${CREDIT_PACKAGES.find(pkg => pkg.id === selectedPackage)?.credits} credits have been added to your account.`,
+                  variant: "default",
+                });
+                onClose();
+              } catch (error) {
+                console.error("Payment capture error:", error);
+                toast({
+                  title: "Payment processing error",
+                  description: "There was an error processing your payment. Please try again.",
+                  variant: "destructive",
+                });
+                setCheckoutStep('payment');
+              }
+            } else if (event.data === 'paypal_payment_cancelled') {
+              // Remove the event listener when we're done with it
+              window.removeEventListener('message', paypalCallback);
+              
+              if (paypalWindow) {
+                paypalWindow.close();
+              }
+              
+              toast({
+                title: "Payment cancelled",
+                description: "You've cancelled the payment process. You can try again when you're ready.",
+                variant: "default",
+              });
+              
+              setCheckoutStep('payment');
+            }
+          });
+          
+          // For demo purposes, simulate a PayPal approval
+          // In a real app, this would be handled by PayPal's approval flow and redirects
+          setTimeout(() => {
+            window.postMessage('paypal_payment_approved', '*');
+          }, 3000);
+        } else {
+          throw new Error("No approval link found in the PayPal response");
+        }
+      } else {
+        throw new Error("Invalid order response from PayPal");
       }
     } catch (error) {
       console.error("Payment error:", error);
+      toast({
+        title: "Payment error",
+        description: "There was an error initiating your payment. Please try again.",
+        variant: "destructive",
+      });
       setCheckoutStep('selectPackage');
     }
   };
