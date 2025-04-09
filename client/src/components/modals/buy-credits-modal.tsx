@@ -8,9 +8,11 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
-import { useCredits } from "@/hooks/use-credits";
+import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { CREDIT_PACKAGES } from "@shared/schema";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface BuyCreditsModalProps {
   open: boolean;
@@ -19,8 +21,49 @@ interface BuyCreditsModalProps {
 
 export function BuyCreditsModal({ open, onClose }: BuyCreditsModalProps) {
   const { user } = useAuth();
-  const { creditPackages, createOrderMutation, captureOrderMutation } = useCredits();
+  const { toast } = useToast();
   const [selectedPackage, setSelectedPackage] = useState<number>(2); // Default to premium pack
+
+  // Create order mutation
+  const createOrderMutation = useMutation({
+    mutationFn: async (packageId: number) => {
+      const res = await apiRequest("POST", "/api/payments/create-order", { packageId });
+      return await res.json();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to create order",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Capture order mutation
+  const captureOrderMutation = useMutation({
+    mutationFn: async ({ orderId, packageId }: { orderId: string, packageId: number }) => {
+      const res = await apiRequest("POST", "/api/payments/capture-order", { orderId, packageId });
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      // Update user data with new credits
+      if (data.user) {
+        queryClient.setQueryData(["/api/user"], data.user);
+      }
+      
+      toast({
+        title: "Purchase successful",
+        description: "Credits have been added to your account!",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Payment failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   useEffect(() => {
     if (!open) {

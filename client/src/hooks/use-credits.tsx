@@ -3,7 +3,6 @@ import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { CREDIT_PACKAGES } from "@shared/schema";
 import { apiRequest, queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "./use-auth";
 
 interface CreateOrderResult {
   id: string;
@@ -30,7 +29,6 @@ const CreditsContext = createContext<CreditsContextType | undefined>(undefined);
 
 export function CreditsProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
-  const { user } = useAuth();
 
   const createOrderMutation = useMutation({
     mutationFn: async (packageId: number) => {
