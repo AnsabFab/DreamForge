@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Registration successful",
-        description: `Welcome to DreamCraft, ${user.username}!`,
+        description: `Welcome to DreamForge, ${user.username}!`,
       });
     },
     onError: (error: Error) => {
