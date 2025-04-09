@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Image } from "@shared/schema";
 import { ImageCard } from "./image-card";
@@ -14,12 +14,17 @@ export function PublicGallery() {
   const {
     data: publicImages,
     isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
+    isFetching,
+    refetch
   } = useQuery<Image[]>({
     queryKey: ["/api/images/public", { filter: activeFilter, page }],
+    enabled: true,
   });
+  
+  // Refetch when filter changes
+  useEffect(() => {
+    refetch();
+  }, [activeFilter, refetch]);
 
   const handleFilterChange = (filter: FilterOption) => {
     setActiveFilter(filter);
@@ -92,24 +97,23 @@ export function PublicGallery() {
             ))}
           </div>
           
-          {hasNextPage && (
-            <div className="text-center mt-8">
-              <Button
-                variant="outline"
-                onClick={() => fetchNextPage()}
-                disabled={isFetchingNextPage}
-              >
-                {isFetchingNextPage ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Loading...
-                  </>
-                ) : (
-                  "Load More"
-                )}
-              </Button>
-            </div>
-          )}
+          {/* Load more button */}
+          <div className="text-center mt-8">
+            <Button
+              variant="outline"
+              onClick={() => setPage(prev => prev + 1)}
+              disabled={isFetching}
+            >
+              {isFetching ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                "Load More"
+              )}
+            </Button>
+          </div>
         </>
       )}
     </div>

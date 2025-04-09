@@ -133,7 +133,9 @@ export function ImageCard({ image, showUser = false }: ImageCardProps) {
       <div className="p-3">
         {showUser && (
           <div className="flex justify-between items-center mb-1">
-            <div className="text-xs text-gray-500 dark:text-gray-400">By @username</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              By @{(image as any).username || 'creator'}
+            </div>
             <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
               <Heart className="h-3 w-3 mr-1" />
               {image.likes || 0}

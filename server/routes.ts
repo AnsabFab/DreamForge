@@ -6,6 +6,7 @@ import { generateImage } from "./huggingface";
 import { createPayPalOrder, capturePayPalOrder } from "./paypal";
 import { generateImageSchema, insertUserSchema, loginSchema } from "@shared/schema";
 import { z } from "zod";
+import { generateSampleImages } from "./sample-data";
 
 // Middleware to check if user is authenticated
 const isAuthenticated = (req: Request, res: Response, next: Function) => {
@@ -95,9 +96,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
       const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
-      const images = await storage.getPublicImages(limit, offset);
+      const filter = req.query.filter as string || "trending";
+      
+      // Get models and styles for the sample images
+      const models = await storage.getModels();
+      const styles = await storage.getStyles();
+      
+      // Use the appropriate category based on the filter
+      let category: "fantasy" | "portraits" | "anime" | "landscapes" | "abstract" | "trending" | "newest" | "mostLiked" = "trending";
+      
+      if (filter === "fantasy" || filter === "portraits" || filter === "anime" || 
+          filter === "newest" || filter === "mostLiked") {
+        category = filter as any;
+      }
+      
+      // Generate sample images for the requested category
+      const sampleImages = generateSampleImages(category, limit, models, styles);
+      
+      // Return existing images from storage if available, or sample images if not
+      const dbImages = await storage.getPublicImages(limit, offset);
+      const images = dbImages.length > 0 ? dbImages : sampleImages;
+      
       res.json(images);
     } catch (error) {
+      console.error("Error fetching public gallery:", error);
       res.status(500).json({ message: "Failed to fetch public gallery" });
     }
   });
