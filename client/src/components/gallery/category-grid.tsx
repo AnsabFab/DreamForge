@@ -33,7 +33,7 @@ const categories: Category[] = [
   {
     id: "landscapes",
     name: "Landscapes",
-    thumbnail: "https://images.unsplash.com/photo-1500964757637-c85e8a162699?q=80&w=3403&auto=format&fit=crop",
+    thumbnail: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200",
     description: "Breathtaking natural vistas",
     images: [
       createSampleImage(101, "Snowy mountain tops at sunset with pink clouds", "landscapes", "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&auto=format&fit=crop"),
@@ -53,7 +53,7 @@ const categories: Category[] = [
   {
     id: "cyberpunk",
     name: "Cyberpunk", 
-    thumbnail: "https://images.unsplash.com/photo-1542272201-b1ca555f8505?q=80&w=3387&auto=format&fit=crop",
+    thumbnail: "https://images.unsplash.com/photo-1484950763426-56b5bf172dbb?w=1200",
     description: "Futuristic urban dystopias",
     images: [
       createSampleImage(201, "Neon-lit urban streets with holographic ads", "cyberpunk", "https://images.unsplash.com/photo-1523821741446-edb2b68bb7a0?w=800&auto=format&fit=crop"),
@@ -71,7 +71,7 @@ const categories: Category[] = [
   {
     id: "portraits",
     name: "Portraits",
-    thumbnail: "https://images.unsplash.com/photo-1604004555489-723a93d6ce74?q=80&w=3387&auto=format&fit=crop",
+    thumbnail: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200",
     description: "Stunning character portraits",
     images: [
       createSampleImage(301, "Mystical female warrior with glowing aura", "portraits", "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=800&auto=format&fit=crop"),
@@ -91,7 +91,7 @@ const categories: Category[] = [
   {
     id: "fantasy",
     name: "Fantasy",
-    thumbnail: "https://images.unsplash.com/photo-1599689018034-48e2ead82951?q=80&w=3270&auto=format&fit=crop",
+    thumbnail: "https://images.unsplash.com/photo-1518562180175-34a163b1a9a6?w=1200",
     description: "Magical worlds and creatures",
     images: [
       createSampleImage(401, "Ancient dragon perched on castle tower", "fantasy", "https://images.unsplash.com/photo-1535666669445-e8c15cd2e7a9?w=800&auto=format&fit=crop"),
@@ -109,7 +109,7 @@ const categories: Category[] = [
   {
     id: "anime",
     name: "Anime",
-    thumbnail: "https://images.unsplash.com/photo-1578632292335-df3abbb0d586?q=80&w=3387&auto=format&fit=crop",
+    thumbnail: "https://wallpapers.com/images/featured/naruto-pictures-ag7qk4gvw46jg6qz.jpg",
     description: "Japanese animation style",
     images: [
       createSampleImage(501, "Anime girl with cherry blossoms", "anime", "https://images.unsplash.com/photo-1559981421-3e0c0d156f77?w=800&auto=format&fit=crop"),
@@ -127,7 +127,7 @@ const categories: Category[] = [
   {
     id: "abstract",
     name: "Abstract",
-    thumbnail: "https://images.unsplash.com/photo-1543857778-c4a1a3e0b2eb?q=80&w=3320&auto=format&fit=crop",
+    thumbnail: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200",
     description: "Colorful abstract designs",
     images: [
       createSampleImage(601, "Vibrant liquid shapes with color flow", "abstract", "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800&auto=format&fit=crop"),
@@ -145,7 +145,7 @@ const categories: Category[] = [
   {
     id: "animals",
     name: "Animals",
-    thumbnail: "https://images.unsplash.com/photo-1474511320723-9a56873867b5?q=80&w=3372&auto=format&fit=crop",
+    thumbnail: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=1200",
     description: "Wildlife and pet portraits",
     images: [
       createSampleImage(701, "Majestic lion in savanna sunset", "animals", "https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=800&auto=format&fit=crop"),
@@ -163,7 +163,7 @@ const categories: Category[] = [
   {
     id: "scifi",
     name: "Sci-Fi",
-    thumbnail: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=3344&auto=format&fit=crop",
+    thumbnail: "https://images.unsplash.com/photo-1543872084-c7bd3822856f?w=1200",
     description: "Futuristic space scenes",
     images: [
       createSampleImage(801, "Spaceship approaching alien planet", "scifi", "https://images.unsplash.com/photo-1536697246787-1f7ae568d89a?w=800&auto=format&fit=crop"),
