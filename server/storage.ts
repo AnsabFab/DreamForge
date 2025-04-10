@@ -149,7 +149,7 @@ export class MemStorage implements IStorage {
     const user: User = {
       id,
       ...userData,
-      credits: 5, // New users get 5 free credits
+      credits: 100, // New users get 100 free credits
       profileImage: null,
       createdAt: now
     };
