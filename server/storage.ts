@@ -102,8 +102,17 @@ export class MemStorage implements IStorage {
         modelId: "stabilityai/stable-diffusion-xl-base-1.0",
         tier: "Standard"
       },
+      {
+        id: 3,
+        name: "ghibli",
+        displayName: "Ghibli Art",
+        description: "Studio Ghibli style art generation",
+        creditCost: 3,
+        modelId: "jamesliu1217/EasyControl_Ghibli",
+        tier: "Premium"
+      },
       { 
-        id: 3, 
+        id: 4, 
         name: "anything-v5", 
         displayName: "Anything V5", 
         description: "Premium", 
