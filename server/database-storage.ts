@@ -66,14 +66,6 @@ export class DatabaseStorage implements IStorage {
         creditCost: 2,
         modelId: "stabilityai/stable-diffusion-xl-base-1.0",
         tier: "Standard"
-      },
-      { 
-        name: "anything-v5", 
-        displayName: "Anything V5", 
-        description: "Premium", 
-        creditCost: 4,
-        modelId: "stablediffusionapi/anything-v5",
-        tier: "Premium"
       }
     ];
     

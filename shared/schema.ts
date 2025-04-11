@@ -26,7 +26,6 @@ export const models = pgTable("models", {
   creditCost: integer("credit_cost").notNull(),
   modelId: text("model_id").notNull(),
   tier: text("tier").notNull(),
-  isPremium: boolean("is_premium").default(false), // Added isPremium column
 });
 
 export const images = pgTable("images", {
