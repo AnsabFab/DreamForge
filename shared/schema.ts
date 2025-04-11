@@ -26,6 +26,7 @@ export const models = pgTable("models", {
   creditCost: integer("credit_cost").notNull(),
   modelId: text("model_id").notNull(),
   tier: text("tier").notNull(),
+  isPremium: boolean("is_premium").default(false), // Added isPremium column
 });
 
 export const images = pgTable("images", {
@@ -109,4 +110,17 @@ export const CREDIT_PACKAGES = [
   { id: 1, name: "Starter Pack", credits: 20, price: 4.99, description: "Perfect for beginners" },
   { id: 2, name: "Premium Pack", credits: 50, price: 9.99, description: "Most value for money", popular: true },
   { id: 3, name: "Pro Pack", credits: 150, price: 24.99, description: "For serious creators" },
+];
+
+export const MODELS = [
+  {
+    id: 3,
+    name: "sana-sprint",
+    displayName: "SanaSprint (Premium)",
+    description: "High-quality image generation with fast inference",
+    creditCost: 10,
+    modelId: "Efficient-Large-Model/SanaSprint", // Added model ID
+    tier: "premium", // Added tier information
+    isPremium: true,
+  },
 ];

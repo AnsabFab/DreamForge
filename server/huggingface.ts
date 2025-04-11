@@ -89,21 +89,24 @@ export async function generateImage(
     }
 
     // Call Hugging Face API
-    const response = await fetch(`${HF_API_URL}/${model.modelId}`, {
+    const response = await fetch(`https://sana-sprint-api.hf.space/run/predict`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${HF_API_KEY}`,
       },
       body: JSON.stringify({
-        inputs: enhancedPrompt,
-        parameters: {
-          negative_prompt: "blurry, bad quality, distorted, deformed",
-          num_inference_steps: 30,
-          guidance_scale: 7.5,
-          width: 1024,
-          height: 1024
-        }
+        data: [
+          enhancedPrompt,
+          "", // negative prompt
+          20, // steps
+          7, // guidance scale
+          1024, // width
+          1024, // height
+          "DPM++ 2M Karras", // sampler
+          false, // high res fix
+          42 // seed
+        ]
       }),
     });
 
