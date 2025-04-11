@@ -209,7 +209,47 @@ export function ImageGenerator() {
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      // Handle file upload
+                      if (file.size > 5 * 1024 * 1024) {
+                        toast({
+                          title: "File too large",
+                          description: "Please upload an image smaller than 5MB",
+                          variant: "destructive",
+                        });
+                        return;
+                      }
+                      
+                      const reader = new FileReader();
+                      reader.onload = async (event) => {
+                        const base64 = event.target?.result as string;
+                        setIsGenerating(true);
+                        
+                        try {
+                          const response = await fetch('/api/images/ghibli', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ imageData: base64 }),
+                          });
+                          
+                          const data = await response.json();
+                          if (data.error) {
+                            throw new Error(data.error);
+                          }
+                          
+                          setGeneratedImage(data.imageUrl);
+                          setActiveTab("view");
+                        } catch (error) {
+                          toast({
+                            title: "Generation failed",
+                            description: error instanceof Error ? error.message : "Failed to generate image",
+                            variant: "destructive",
+                          });
+                        } finally {
+                          setIsGenerating(false);
+                        }
+                      };
+                      reader.readAsDataURL(file);
                     }
                   }}
                 />
