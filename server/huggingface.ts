@@ -38,16 +38,12 @@ export async function generateGhibliImage(
       zero_steps: 3,
     });
 
-    // Convert the result to a data URL
-    const response = await fetch(result.data[0]);
-    const resultBlob = await response.blob();
-    const dataUrl = await new Promise<string>((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.readAsDataURL(resultBlob);
-    });
+    if (!result.data || !result.data[0]) {
+      throw new Error("No image generated");
+    }
 
-    return { imageUrl: dataUrl };
+    // The result.data[0] is already a base64 string from Gradio
+    return { imageUrl: `data:image/jpeg;base64,${result.data[0]}` };
   } catch (error) {
     console.error("Ghibli image generation error:", error);
     return {
