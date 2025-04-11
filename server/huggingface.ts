@@ -96,16 +96,13 @@ export async function generateImage(
         Authorization: `Bearer ${HF_API_KEY}`,
       },
       body: JSON.stringify({
-        inputs: model.name === "ghibli" ? {
-          prompt: enhancedPrompt,
+        inputs: enhancedPrompt,
+        parameters: {
           negative_prompt: "blurry, bad quality, distorted, deformed",
-          style_strength: 0.8,
-          steps: 30
-        } : {
-          inputs: enhancedPrompt,
-          parameters: {
-            negative_prompt: "blurry, bad quality, distorted, deformed",
-          }
+          num_inference_steps: 30,
+          guidance_scale: 7.5,
+          width: 1024,
+          height: 1024
         }
       }),
     });

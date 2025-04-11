@@ -179,14 +179,10 @@ export function ImageGenerator() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-3 w-full rounded-none bg-slate-800/50">
+          <TabsList className="grid grid-cols-2 w-full rounded-none bg-slate-800/50">
             <TabsTrigger value="create" className="data-[state=active]:bg-slate-700 py-3">
               <ImagePlus className="h-4 w-4 mr-2" />
               Text to Image
-            </TabsTrigger>
-            <TabsTrigger value="ghibli" className="data-[state=active]:bg-slate-700 py-3">
-              <Wand2 className="h-4 w-4 mr-2" />
-              Ghibli Style
             </TabsTrigger>
             <TabsTrigger value="view" className="data-[state=active]:bg-slate-700 py-3" disabled={!generatedImage}>
               <ImageIcon className="h-4 w-4 mr-2" />
@@ -194,83 +190,7 @@ export function ImageGenerator() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="ghibli" className="p-0 m-0">
-            <div className="p-6">
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-white mb-2">Ghibli Style Transfer</h3>
-                <p className="text-slate-400">Transform your images into charming Ghibli-style artwork</p>
-              </div>
-              <div className="border-2 border-dashed border-slate-700 rounded-lg p-8 text-center mb-6">
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  id="ghibli-upload"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      if (file.size > 5 * 1024 * 1024) {
-                        toast({
-                          title: "File too large",
-                          description: "Please upload an image smaller than 5MB",
-                          variant: "destructive",
-                        });
-                        return;
-                      }
-                      
-                      const reader = new FileReader();
-                      reader.onload = async (event) => {
-                        const base64 = event.target?.result as string;
-                        setIsGenerating(true);
-                        
-                        try {
-                          const response = await fetch('/api/images/ghibli', {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ imageData: base64 }),
-                          });
-                          
-                          const data = await response.json();
-                          if (data.error) {
-                            throw new Error(data.error);
-                          }
-                          
-                          setGeneratedImage(data.imageUrl);
-                          setActiveTab("view");
-                        } catch (error) {
-                          toast({
-                            title: "Generation failed",
-                            description: error instanceof Error ? error.message : "Failed to generate image. The model might be busy, please try again.",
-                            variant: "destructive",
-                            action: <Button onClick={() => document.getElementById('ghibli-upload')?.click()}>Retry</Button>
-                          });
-                        } finally {
-                          setIsGenerating(false);
-                        }
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  }}
-                />
-                <label htmlFor="ghibli-upload" className="cursor-pointer">
-                  <div className="mb-4">
-                    <ImageIcon className="h-12 w-12 mx-auto text-slate-500" />
-                  </div>
-                  <p className="text-slate-300 mb-2">Click to upload your image</p>
-                  <p className="text-sm text-slate-500">PNG, JPG up to 5MB</p>
-                </label>
-              </div>
-              <Button 
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 h-12"
-                disabled={isGenerating}
-              >
-                <Wand2 className="mr-2 h-5 w-5" />
-                Transform to Ghibli Style (5 credits)
-              </Button>
-            </div>
-          </TabsContent>
+          
 
           <TabsContent value="create" className="p-0 m-0">
             <div className="p-6">
