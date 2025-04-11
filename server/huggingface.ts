@@ -10,10 +10,45 @@ interface GenerationResult {
   error?: string;
 }
 
+export async function generateGhibliImage(
+  userId: number,
+  imageData: string
+): Promise<{ imageUrl: string; error?: string }> {
+  try {
+    const response = await fetch(
+      `${HF_API_URL}/jamesliu1217/EasyControl_Ghibli`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${HF_API_KEY}`,
+        },
+        body: JSON.stringify({
+          inputs: imageData,
+          parameters: {
+            prompt: "Ghibli Studio style, Charming hand-drawn anime-style illustration",
+            style_strength: 0.8,
+            steps: 30
+          }
+        }),
+      }
+    );
+
+    const result = await response.json();
+    return { imageUrl: result.image };
+  } catch (error) {
+    console.error("Ghibli image generation error:", error);
+    return {
+      imageUrl: "",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
 export async function generateImage(
   userId: number,
   input: GenerateImageInput
-): Promise<GenerationResult> {
+): Promise<{ imageUrl: string; error?: string }> {
   try {
     // Get the model information
     const model = await storage.getModelById(input.modelId);
@@ -73,7 +108,7 @@ export async function generateImage(
 
     // The API returns the image directly as binary data
     const blob = await response.blob();
-    
+
     // In a real-world application, you would upload this to a storage service
     // For this example, we'll create a data URL (not ideal for production)
     const buffer = await blob.arrayBuffer();
