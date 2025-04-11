@@ -15,27 +15,39 @@ export async function generateGhibliImage(
   imageData: string
 ): Promise<{ imageUrl: string; error?: string }> {
   try {
-    const response = await fetch(
-      `${HF_API_URL}/jamesliu1217/EasyControl_Ghibli`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${HF_API_KEY}`,
-        },
-        body: JSON.stringify({
-          inputs: imageData,
-          parameters: {
-            prompt: "Ghibli Studio style, Charming hand-drawn anime-style illustration",
-            style_strength: 0.8,
-            steps: 30
-          }
-        }),
-      }
-    );
+    const { Client } = await import("@gradio/client");
+    
+    // Convert base64 to blob
+    const base64Data = imageData.split(',')[1];
+    const binaryData = atob(base64Data);
+    const array = new Uint8Array(binaryData.length);
+    for (let i = 0; i < binaryData.length; i++) {
+      array[i] = binaryData.charCodeAt(i);
+    }
+    const blob = new Blob([array], { type: 'image/png' });
 
-    const result = await response.json();
-    return { imageUrl: result.image };
+    const client = await Client.connect("jamesliu1217/EasyControl_Ghibli");
+    const result = await client.predict("/single_condition_generate_image", {
+      prompt: "Ghibli Studio style, Charming hand-drawn anime-style illustration",
+      spatial_img: blob,
+      height: 512,
+      width: 512,
+      seed: Math.floor(Math.random() * 1000),
+      control_type: "Ghibli",
+      use_zero_init: true,
+      zero_steps: 3,
+    });
+
+    // Convert the result to a data URL
+    const response = await fetch(result.data[0]);
+    const resultBlob = await response.blob();
+    const dataUrl = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(resultBlob);
+    });
+
+    return { imageUrl: dataUrl };
   } catch (error) {
     console.error("Ghibli image generation error:", error);
     return {
