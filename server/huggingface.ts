@@ -16,7 +16,7 @@ export async function generateGhibliImage(
 ): Promise<{ imageUrl: string; error?: string }> {
   try {
     const { Client } = await import("@gradio/client");
-    
+
     // Convert base64 to blob
     const base64Data = imageData.split(',')[1];
     const binaryData = atob(base64Data);
@@ -46,9 +46,14 @@ export async function generateGhibliImage(
     return { imageUrl: `data:image/jpeg;base64,${result.data[0]}` };
   } catch (error) {
     console.error("Ghibli image generation error:", error);
+    const errorMessage = error instanceof Error ? error.message : 
+      (error as any)?.message === 'You have exceeded your GPU quota (60s requested vs. 0s left).' 
+        ? "GPU quota exceeded. Please try again in a minute." 
+        : "Failed to generate image. Please try again.";
+
     return {
       imageUrl: "",
-      error: error instanceof Error ? error.message : "Unknown error occurred",
+      error: errorMessage
     };
   }
 }
@@ -139,9 +144,14 @@ export async function generateImage(
     return { imageUrl: dataUrl };
   } catch (error) {
     console.error("Image generation error:", error);
+    const errorMessage = error instanceof Error ? error.message : 
+      (error as any)?.message === 'You have exceeded your GPU quota (60s requested vs. 0s left).' 
+        ? "GPU quota exceeded. Please try again in a minute." 
+        : "Failed to generate image. Please try again.";
+
     return {
       imageUrl: "",
-      error: error instanceof Error ? error.message : "Unknown error occurred",
+      error: errorMessage
     };
   }
 }

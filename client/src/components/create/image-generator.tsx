@@ -242,8 +242,9 @@ export function ImageGenerator() {
                         } catch (error) {
                           toast({
                             title: "Generation failed",
-                            description: error instanceof Error ? error.message : "Failed to generate image",
+                            description: error instanceof Error ? error.message : "Failed to generate image. The model might be busy, please try again.",
                             variant: "destructive",
+                            action: <Button onClick={() => document.getElementById('ghibli-upload')?.click()}>Retry</Button>
                           });
                         } finally {
                           setIsGenerating(false);
